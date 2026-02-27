@@ -196,15 +196,6 @@ Kontribusi sangat diterima! Silakan:
 - [ ] Estimasi biaya servis berikutnya
 - [ ] Multi bahasa (English support)
 
-## 📄 Lisensi
-
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
-
----
-
-<p align="center">
-  Dibuat dengan ❤️ untuk komunitas otomotif Indonesia 🇮🇩
-</p>
 
 <p align="center">
   <strong>⭐ Jangan lupa beri bintang jika proyek ini bermanfaat!</strong>
