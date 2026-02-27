@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 ServisKu - Pengingat Perawatan Kendaraan</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- SPLASH / LOADING -->
+    <div id="splash" class="splash">
+        <div class="splash-content">
+            <div class="splash-icon">🔧</div>
+            <h1>ServisKu</h1>
+            <p>Pengingat Perawatan Kendaraan Anda</p>
+            <div class="loading-bar"><div class="loading-fill"></div></div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app" class="app hidden">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <span class="logo">🔧</span>
+                <h1>ServisKu</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="btnTheme" title="Ganti Tema">🌙</button>
+                <button class="btn-icon" id="btnExport" title="Ekspor Data">📥</button>
+                <button class="btn-icon" id="btnImport" title="Impor Data">📤</button>
+                <input type="file" id="fileImport" accept=".json" hidden>
+            </div>
+        </header>
+
+        <!-- NAVIGATION TABS -->
+        <nav class="nav-tabs">
+            <button class="tab active" data-tab="dashboard">
+                <span class="tab-icon">📊</span>
+                <span class="tab-text">Dashboard</span>
+            </button>
+            <button class="tab" data-tab="kendaraan">
+                <span class="tab-icon">🏍️</span>
+                <span class="tab-text">Kendaraan</span>
+            </button>
+            <button class="tab" data-tab="servis">
+                <span class="tab-icon">🔧</span>
+                <span class="tab-text">Servis</span>
+            </button>
+            <button class="tab" data-tab="riwayat">
+                <span class="tab-icon">📋</span>
+                <span class="tab-text">Riwayat</span>
+            </button>
+            <button class="tab" data-tab="pengaturan">
+                <span class="tab-icon">⚙️</span>
+                <span class="tab-text">Pengaturan</span>
+            </button>
+        </nav>
+
+        <!-- TAB CONTENTS -->
+        <main class="main-content">
+
+            <!-- ==================== DASHBOARD ==================== -->
+            <section id="tab-dashboard" class="tab-content active">
+                <div class="section-header">
+                    <h2>📊 Dashboard</h2>
+                    <p class="subtitle">Ringkasan status perawatan kendaraan Anda</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card stat-total">
+                        <div class="stat-icon">🏍️</div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="statTotal">0</span>
+                            <span class="stat-label">Total Kendaraan</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-danger">
+                        <div class="stat-icon">🔴</div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="statDanger">0</span>
+                            <span class="stat-label">Segera Ganti</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-warning">
+                        <div class="stat-icon">🟡</div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="statWarning">0</span>
+                            <span class="stat-label">Hampir Waktunya</span>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-safe">
+                        <div class="stat-icon">🟢</div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="statSafe">0</span>
+                            <span class="stat-label">Masih Aman</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Selector for Dashboard -->
+                <div class="dashboard-vehicle-select">
+                    <label>Pilih Kendaraan:</label>
+                    <select id="dashVehicleSelect">
+                        <option value="">-- Semua Kendaraan --</option>
+                    </select>
+                </div>
+
+                <!-- Alert List -->
+                <div id="alertList" class="alert-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">🏍️</div>
+                        <h3>Belum Ada Kendaraan</h3>
+                        <p>Tambahkan kendaraan pertama Anda untuk mulai melacak perawatan</p>
+                        <button class="btn btn-primary" onclick="switchTab('kendaraan')">+ Tambah Kendaraan</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== KENDARAAN ==================== -->
+            <section id="tab-kendaraan" class="tab-content">
+                <div class="section-header">
+                    <h2>🏍️ Kendaraan Saya</h2>
+                    <button class="btn btn-primary" id="btnAddVehicle">+ Tambah Kendaraan</button>
+                </div>
+
+                <div id="vehicleList" class="vehicle-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">🅿️</div>
+                        <h3>Belum Ada Kendaraan</h3>
+                        <p>Klik tombol "Tambah Kendaraan" untuk memulai</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SERVIS ==================== -->
+            <section id="tab-servis" class="tab-content">
+                <div class="section-header">
+                    <h2>🔧 Catat Servis / Update KM</h2>
+                    <p class="subtitle">Pilih kendaraan dan catat perawatan yang dilakukan</p>
+                </div>
+
+                <div class="servis-form-container">
+                    <div class="form-group">
+                        <label>Pilih Kendaraan:</label>
+                        <select id="servisVehicleSelect">
+                            <option value="">-- Pilih Kendaraan --</option>
+                        </select>
+                    </div>
+
+                    <div id="servisFormArea" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>📏 Kilometer Saat Ini:</label>
+                                <input type="number" id="inputKmSekarang" placeholder="Contoh: 15000" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>📅 Tanggal:</label>
+                                <input type="date" id="inputTanggal">
+                            </div>
+                        </div>
+
+                        <button class="btn btn-secondary" id="btnUpdateKm">📏 Update KM Saja</button>
+
+                        <hr class="divider">
+
+                        <h3>✅ Pilih Komponen yang Diservis:</h3>
+                        <div id="komponenChecklist" class="komponen-checklist"></div>
+
+                        <div class="form-group">
+                            <label>🏪 Nama Bengkel (opsional):</label>
+                            <input type="text" id="inputBengkel" placeholder="Contoh: Bengkel Jaya Motor">
+                        </div>
+                        <div class="form-group">
+                            <label>💰 Total Biaya (opsional):</label>
+                            <input type="number" id="inputBiaya" placeholder="Contoh: 150000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>📝 Catatan (opsional):</label>
+                            <textarea id="inputCatatan" placeholder="Catatan tambahan..." rows="2"></textarea>
+                        </div>
+
+                        <button class="btn btn-primary btn-lg" id="btnSimpanServis">💾 Simpan Servis</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== RIWAYAT ==================== -->
+            <section id="tab-riwayat" class="tab-content">
+                <div class="section-header">
+                    <h2>📋 Riwayat Servis</h2>
+                    <div class="filter-row">
+                        <select id="riwayatVehicleSelect">
+                            <option value="">-- Semua Kendaraan --</option>
+                        </select>
+                        <select id="riwayatKomponenFilter">
+                            <option value="">-- Semua Komponen --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="riwayatList" class="riwayat-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <h3>Belum Ada Riwayat</h3>
+                        <p>Riwayat servis akan muncul setelah Anda mencatat servis pertama</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== PENGATURAN ==================== -->
+            <section id="tab-pengaturan" class="tab-content">
+                <div class="section-header">
+                    <h2>⚙️ Pengaturan</h2>
+                    <p class="subtitle">Sesuaikan komponen dan interval servis</p>
+                </div>
+
+                <div class="settings-container">
+                    <div class="setting-group">
+                        <h3>🎨 Tampilan</h3>
+                        <div class="setting-item">
+                            <label>Tema Gelap</label>
+                            <label class="switch">
+                                <input type="checkbox" id="settingDarkMode">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3>🔔 Batas Peringatan</h3>
+                        <div class="setting-item">
+                            <label>Peringatan Kuning (% sisa)</label>
+                            <input type="number" id="settingWarningPct" value="30" min="10" max="50" class="input-sm">
+                            <span>%</span>
+                        </div>
+                        <div class="setting-item">
+                            <label>Peringatan Merah (% sisa)</label>
+                            <input type="number" id="settingDangerPct" value="10" min="0" max="30" class="input-sm">
+                            <span>%</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3>📦 Data</h3>
+                        <div class="setting-item">
+                            <button class="btn btn-secondary" id="btnResetData">🗑️ Hapus Semua Data</button>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <h3>ℹ️ Tentang Aplikasi</h3>
+                        <div class="about-info">
+                            <p><strong>ServisKu</strong> v1.0</p>
+                            <p>Aplikasi pengingat perawatan kendaraan.</p>
+                            <p>Data tersimpan di browser Anda (LocalStorage).</p>
+                            <p>Gunakan fitur Ekspor/Impor untuk backup data.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- Modal Tambah Kendaraan -->
+    <div id="modalVehicle" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalVehicleTitle">🏍️ Tambah Kendaraan Baru</h3>
+                <button class="btn-close" data-close="modalVehicle">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Jenis Kendaraan:</label>
+                    <div class="radio-group">
+                        <label class="radio-card">
+                            <input type="radio" name="vehicleType" value="motor" checked>
+                            <span class="radio-card-content">
+                                <span class="radio-icon">🏍️</span>
+                                <span>Motor</span>
+                            </span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="vehicleType" value="mobil">
+                            <span class="radio-card-content">
+                                <span class="radio-icon">🚗</span>
+                                <span>Mobil</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" id="transmisiGroup">
+                    <label>Tipe Transmisi:</label>
+                    <div class="radio-group">
+                        <label class="radio-card small">
+                            <input type="radio" name="transmisi" value="matic" checked>
+                            <span class="radio-card-content">
+                                <span>Matic</span>
+                            </span>
+                        </label>
+                        <label class="radio-card small">
+                            <input type="radio" name="transmisi" value="manual">
+                            <span class="radio-card-content">
+                                <span>Manual</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Merk:</label>
+                        <input type="text" id="vMerk" placeholder="Contoh: Honda">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipe/Model:</label>
+                        <input type="text" id="vTipe" placeholder="Contoh: Beat">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tahun:</label>
+                        <input type="number" id="vTahun" placeholder="2024" min="1990" max="2030">
+                    </div>
+                    <div class="form-group">
+                        <label>Plat Nomor:</label>
+                        <input type="text" id="vPlat" placeholder="B 1234 ABC">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Kilometer Saat Ini:</label>
+                    <input type="number" id="vKm" placeholder="Contoh: 5000" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Warna (opsional):</label>
+                    <input type="text" id="vWarna" placeholder="Contoh: Hitam">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-close="modalVehicle">Batal</button>
+                <button class="btn btn-primary" id="btnSaveVehicle">💾 Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detail Kendaraan -->
+    <div id="modalDetail" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="modalDetailTitle">Detail Kendaraan</h3>
+                <button class="btn-close" data-close="modalDetail">&times;</button>
+            </div>
+            <div class="modal-body" id="modalDetailBody">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-close="modalDetail">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi -->
+    <div id="modalConfirm" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3 id="confirmTitle">Konfirmasi</h3>
+                <button class="btn-close" data-close="modalConfirm">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Apakah Anda yakin?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-close="modalConfirm">Batal</button>
+                <button class="btn btn-danger" id="btnConfirmYes">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
